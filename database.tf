@@ -1,9 +1,9 @@
 #The managed MySQL database (RDS).
 resource "aws_db_subnet_group" "db_subs" {
-  name       = "db-subnets"
+  name = "db-subnets"
   # RDS requires at least two subnets in different AZs for validation, 
   # even if Multi-AZ is disabled.
-  subnet_ids = [aws_subnet.private_1.id, aws_subnet.public_1.id]
+  subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 }
 
 resource "aws_db_instance" "wordpress_db" {

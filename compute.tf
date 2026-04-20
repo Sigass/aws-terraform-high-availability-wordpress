@@ -5,7 +5,7 @@ resource "aws_lb" "wp_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   # ALB requires 2 subnets in different AZs
-  subnets            = [aws_subnet.public_1.id, aws_subnet.private_1.id]
+  subnets = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 }
 
 resource "aws_lb_target_group" "wp_tg" {
@@ -27,9 +27,9 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_launch_template" "wp_lt" {
-  name_prefix   = "wp-lt-"
-  image_id      = "ami-0cf2b4e024cdb6960" # Amazon Linux 2023 us-west-2
-  instance_type = "t3.micro"
+  name_prefix            = "wp-lt-"
+  image_id               = "ami-0cf2b4e024cdb6960" # Amazon Linux 2023 us-west-2
+  instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.wp_sg.id]
 
   user_data = base64encode(<<-EOF
@@ -53,7 +53,7 @@ resource "aws_launch_template" "wp_lt" {
 }
 
 resource "aws_autoscaling_group" "wp_asg" {
-  vpc_zone_identifier = [aws_subnet.public_1.id]
+  vpc_zone_identifier = [aws_subnet.public_1.id, aws_subnet.public_2.id]
   desired_capacity    = 1
   max_size            = 2
   min_size            = 1

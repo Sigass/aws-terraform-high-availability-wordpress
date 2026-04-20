@@ -6,7 +6,7 @@ variable "region" {
 
 variable "vpc_cidr" {
   type    = string
-  default = "192.168.0.0/27"
+  default = "192.168.0.0/26"
 }
 
 variable "public_subnet_cidr" {
@@ -14,9 +14,19 @@ variable "public_subnet_cidr" {
   default = "192.168.0.0/28"
 }
 
-variable "private_subnet_cidr" {
+variable "public_subnet_2_cidr" {
   type    = string
   default = "192.168.0.16/28"
+}
+
+variable "private_subnet_cidr" {
+  type    = string
+  default = "192.168.0.32/28"
+}
+
+variable "private_subnet_2_cidr" {
+  type    = string
+  default = "192.168.0.48/28"
 }
 
 variable "db_username" {
