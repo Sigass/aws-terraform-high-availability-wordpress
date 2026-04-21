@@ -1,10 +1,10 @@
 #connect Terraform to AWS account.
 terraform {
   cloud {
-    organization = "aws"
+    organization = "sigass"
 
     workspaces {
-      name = "aws"
+      name = "aws-terraform-high-availability-wordpress"
     }
   }
 
