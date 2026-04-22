@@ -15,5 +15,14 @@ resource "aws_db_instance" "wordpress_db" {
   password               = var.db_password
   db_subnet_group_name   = aws_db_subnet_group.db_subs.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
-  skip_final_snapshot    = true
+  backup_retention_period = var.db_backup_retention_period
+  copy_tags_to_snapshot   = true
+  delete_automated_backups = false
+  deletion_protection     = true
+  skip_final_snapshot     = false
+  final_snapshot_identifier = "wordpress-db-final-snapshot"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

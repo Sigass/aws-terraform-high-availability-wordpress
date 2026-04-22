@@ -1,5 +1,12 @@
 data "aws_caller_identity" "current" {}
 
+locals {
+  wordpress_storage_bucket_name = coalesce(
+    var.storage_bucket_name,
+    "wordpress-storage-${data.aws_caller_identity.current.account_id}"
+  )
+}
+
 data "aws_iam_policy_document" "wordpress_storage_public_read" {
   statement {
     sid    = "PublicReadGetObject"
@@ -17,10 +24,14 @@ data "aws_iam_policy_document" "wordpress_storage_public_read" {
 }
 
 resource "aws_s3_bucket" "wordpress_storage" {
-  bucket = "wordpress-storage-${data.aws_caller_identity.current.account_id}"
+  bucket = local.wordpress_storage_bucket_name
 
   tags = {
     Name = "wordpress-storage"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 

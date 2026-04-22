@@ -104,3 +104,6 @@ terraform apply
 - `db_password` should be treated as a sensitive value and managed in HCP Terraform rather than committed to source control.
 - The current implementation uses HCP Terraform as the state and execution backend, not S3.
 - The network is multi-AZ, even though the workload can scale from one to two application instances.
+- The media bucket can be pinned with `storage_bucket_name` to avoid accidental name drift and should be reused rather than recreated.
+- RDS is configured with backup retention, deletion protection, and `prevent_destroy` to reduce accidental data loss.
+- If your AWS credentials change, keep them pointed at the same AWS account or role for this stack. Changing to a different account means Terraform will no longer manage the same infrastructure.

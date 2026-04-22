@@ -38,3 +38,16 @@ variable "db_password" {
   type      = string
   sensitive = true
 }
+
+variable "storage_bucket_name" {
+  type        = string
+  default     = null
+  nullable    = true
+  description = "Optional fixed S3 bucket name for WordPress media storage. Set this to keep the same bucket across runs and credential rotations in the same AWS account."
+}
+
+variable "db_backup_retention_period" {
+  type        = number
+  default     = 7
+  description = "Number of days to retain automated RDS backups."
+}
