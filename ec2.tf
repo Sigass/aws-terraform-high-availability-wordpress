@@ -15,12 +15,35 @@ resource "aws_launch_template" "wp_lt" {
   user_data = base64encode(<<-EOF
     #!/bin/bash
     set -euxo pipefail
+    exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
 
-    dnf update -y
     dnf install -y httpd php php-mysqlnd wget tar unzip
+
+    mkdir -p /var/www/html
+    cat > /var/www/html/health.html <<'HTML'
+ok
+HTML
+
+    cat > /var/www/html/index.html <<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WordPress setup in progress</title>
+</head>
+<body>
+  <h1>WordPress setup in progress</h1>
+  <p>The instance is bootstrapping. Refresh this page in a few minutes.</p>
+</body>
+</html>
+HTML
+
+    chown -R apache:apache /var/www/html
     systemctl enable --now httpd
+
     cd /var/www/html
-    wget https://wordpress.org/latest.tar.gz
+    rm -f latest.tar.gz
+    wget -O latest.tar.gz https://wordpress.org/latest.tar.gz
     tar -xzf latest.tar.gz
     cp -r wordpress/* .
     cp wp-config-sample.php wp-config.php
@@ -47,6 +70,7 @@ require WPMU_PLUGIN_DIR . '/s3-uploads/s3-uploads.php';
 PHP
     fi
 
+    rm -f /var/www/html/index.html
     chown -R apache:apache wp-content
     systemctl restart httpd
   EOF
