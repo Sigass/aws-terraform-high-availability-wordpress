@@ -32,7 +32,7 @@ resource "aws_launch_template" "wp_lt" {
       done
     }
 
-    retry 3 dnf install -y httpd php php-mysqlnd wget tar unzip
+    retry 3 dnf install -y httpd
 
     mkdir -p /var/www/html
     cat > /var/www/html/health.html <<'HTML'
@@ -77,6 +77,7 @@ retry() {
 }
 
 cd /var/www/html
+retry 3 dnf install -y php php-mysqlnd wget tar unzip
 rm -f latest.tar.gz
 retry 3 wget -O latest.tar.gz https://wordpress.org/latest.tar.gz
 tar -xzf latest.tar.gz
