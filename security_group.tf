@@ -1,7 +1,7 @@
 #firewalls, following the principle of least privilege.
 resource "aws_security_group" "alb_sg" {
-  name   = "alb-sg"
-  vpc_id = aws_vpc.capstone_vpc.id
+  name   = "load-balancer-security-group"
+  vpc_id = aws_vpc.wordpress_vpc.id
   ingress {
     from_port   = 80
     to_port     = 80
@@ -18,7 +18,7 @@ resource "aws_security_group" "alb_sg" {
 
 resource "aws_security_group" "wp_sg" {
   name   = "wordpress-sg"
-  vpc_id = aws_vpc.capstone_vpc.id
+  vpc_id = aws_vpc.wordpress_vpc.id
   ingress {
     from_port       = 80
     to_port         = 80
@@ -34,8 +34,8 @@ resource "aws_security_group" "wp_sg" {
 }
 
 resource "aws_security_group" "db_sg" {
-  name   = "db-sg"
-  vpc_id = aws_vpc.capstone_vpc.id
+  name   = "database-sg"
+  vpc_id = aws_vpc.wordpress_vpc.id
   ingress {
     from_port       = 3306
     to_port         = 3306
