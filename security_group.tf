@@ -1,4 +1,4 @@
-#firewalls, following the principle of least privilege.
+# Define security groups using least-privilege access.
 resource "aws_security_group" "alb_sg" {
   name   = "load-balancer-security-group"
   vpc_id = aws_vpc.wordpress_vpc.id

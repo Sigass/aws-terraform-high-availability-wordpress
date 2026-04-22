@@ -1,4 +1,4 @@
-#connect Terraform to AWS account.
+# Configure Terraform and the AWS provider.
 terraform {
   cloud {
     organization = "sigass"

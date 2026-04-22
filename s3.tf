@@ -1,5 +1,21 @@
 data "aws_caller_identity" "current" {}
 
+data "aws_iam_policy_document" "wordpress_storage_public_read" {
+  statement {
+    sid    = "PublicReadGetObject"
+    effect = "Allow"
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = ["s3:GetObject"]
+
+    resources = ["${aws_s3_bucket.wordpress_storage.arn}/*"]
+  }
+}
+
 resource "aws_s3_bucket" "wordpress_storage" {
   bucket = "wordpress-storage-${data.aws_caller_identity.current.account_id}"
 
@@ -30,7 +46,12 @@ resource "aws_s3_bucket_public_access_block" "wordpress_storage" {
   bucket = aws_s3_bucket.wordpress_storage.id
 
   block_public_acls       = true
-  block_public_policy     = true
+  block_public_policy     = false
   ignore_public_acls      = true
-  restrict_public_buckets = true
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "wordpress_storage_public_read" {
+  bucket = aws_s3_bucket.wordpress_storage.id
+  policy = data.aws_iam_policy_document.wordpress_storage_public_read.json
 }

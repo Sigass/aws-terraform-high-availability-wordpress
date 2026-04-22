@@ -1,7 +1,7 @@
-#The managed MySQL database (RDS).
+# Define the managed MySQL database layer.
 resource "aws_db_subnet_group" "db_subs" {
   name = "db-subnets"
-  # RDS requires at least two subnets in different AZs for validation, 
+  # RDS requires subnets in at least two Availability Zones for validation,
   # even if Multi-AZ is disabled.
   subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 }

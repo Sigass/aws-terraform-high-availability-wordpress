@@ -1,4 +1,4 @@
-#defines the "placeholders" for configuration, allowing to reuse the code easily.
+# Define reusable input variables for the infrastructure.
 variable "region" {
   type    = string
   default = "us-west-2"
