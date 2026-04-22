@@ -5,10 +5,10 @@ output "website_url" {
 
 output "storage_bucket_name" {
   description = "S3 bucket name for WordPress storage"
-  value       = aws_s3_bucket.wordpress_storage.bucket
+  value       = data.aws_s3_bucket.wordpress_storage.bucket
 }
 
 output "storage_bucket_arn" {
   description = "S3 bucket ARN for WordPress storage"
-  value       = aws_s3_bucket.wordpress_storage.arn
+  value       = data.aws_s3_bucket.wordpress_storage.arn
 }

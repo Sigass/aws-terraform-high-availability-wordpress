@@ -24,7 +24,7 @@ resource "aws_launch_template" "wp_lt" {
     sed -i "s/username_here/${var.db_username}/" wp-config.php
     sed -i "s/password_here/${var.db_password}/" wp-config.php
     sed -i "s/localhost/${aws_db_instance.wordpress_db.address}/" wp-config.php
-    sed -i "/\/\* That's all, stop editing! Happy publishing. \*\//i define( 'S3_UPLOADS_BUCKET', '${aws_s3_bucket.wordpress_storage.bucket}' );" wp-config.php
+    sed -i "/\/\* That's all, stop editing! Happy publishing. \*\//i define( 'S3_UPLOADS_BUCKET', '${data.aws_s3_bucket.wordpress_storage.bucket}' );" wp-config.php
     sed -i "/\/\* That's all, stop editing! Happy publishing. \*\//i define( 'S3_UPLOADS_REGION', '${var.region}' );" wp-config.php
     chown -R apache:apache /var/www/html
     find /var/www/html -type d -exec chmod 755 {} \;

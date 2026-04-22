@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "wordpress_s3_access" {
       "s3:GetBucketLocation",
     ]
 
-    resources = [aws_s3_bucket.wordpress_storage.arn]
+    resources = [data.aws_s3_bucket.wordpress_storage.arn]
   }
 
   statement {
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "wordpress_s3_access" {
       "s3:ListMultipartUploadParts",
     ]
 
-    resources = ["${aws_s3_bucket.wordpress_storage.arn}/*"]
+    resources = ["${data.aws_s3_bucket.wordpress_storage.arn}/*"]
   }
 }
 

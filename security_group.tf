@@ -1,6 +1,6 @@
 # Define security groups using least-privilege access.
 resource "aws_security_group" "alb_sg" {
-  name   = "load-balancer-security-group"
+  name   = "alb-sg"
   vpc_id = aws_vpc.wordpress_vpc.id
   ingress {
     from_port   = 80
@@ -34,7 +34,7 @@ resource "aws_security_group" "wp_sg" {
 }
 
 resource "aws_security_group" "db_sg" {
-  name   = "database-sg"
+  name   = "db-sg"
   vpc_id = aws_vpc.wordpress_vpc.id
   ingress {
     from_port       = 3306
