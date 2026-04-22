@@ -34,21 +34,25 @@ data "aws_iam_policy_document" "wordpress_s3_access" {
 }
 
 resource "aws_iam_role" "wordpress_ec2_role" {
+  count              = var.enable_wordpress_s3_iam_resources ? 1 : 0
   name               = "wordpress-ec2-s3-role"
   assume_role_policy = data.aws_iam_policy_document.wordpress_ec2_assume_role.json
 }
 
 resource "aws_iam_policy" "wordpress_s3_access" {
+  count  = var.enable_wordpress_s3_iam_resources ? 1 : 0
   name   = "wordpress-s3-access"
   policy = data.aws_iam_policy_document.wordpress_s3_access.json
 }
 
 resource "aws_iam_role_policy_attachment" "wordpress_s3_access" {
-  role       = aws_iam_role.wordpress_ec2_role.name
-  policy_arn = aws_iam_policy.wordpress_s3_access.arn
+  count      = var.enable_wordpress_s3_iam_resources ? 1 : 0
+  role       = aws_iam_role.wordpress_ec2_role[0].name
+  policy_arn = aws_iam_policy.wordpress_s3_access[0].arn
 }
 
 resource "aws_iam_instance_profile" "wordpress_ec2_profile" {
-  name = "wordpress-ec2-profile"
-  role = aws_iam_role.wordpress_ec2_role.name
+  count = var.enable_wordpress_s3_iam_resources ? 1 : 0
+  name  = "wordpress-ec2-profile"
+  role  = aws_iam_role.wordpress_ec2_role[0].name
 }

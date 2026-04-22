@@ -51,3 +51,15 @@ variable "db_backup_retention_period" {
   default     = 7
   description = "Number of days to retain automated RDS backups."
 }
+
+variable "enable_wordpress_s3_iam_resources" {
+  type        = bool
+  default     = false
+  description = "Create IAM role, policy, and instance profile for WordPress S3 uploads. Keep false in restricted lab accounts that deny IAM creation."
+}
+
+variable "enable_public_media_bucket_policy" {
+  type        = bool
+  default     = false
+  description = "Attach a public-read bucket policy for media objects. Keep false when S3 Block Public Access prevents public bucket policies."
+}

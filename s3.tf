@@ -63,6 +63,7 @@ resource "aws_s3_bucket_public_access_block" "wordpress_storage" {
 }
 
 resource "aws_s3_bucket_policy" "wordpress_storage_public_read" {
+  count  = var.enable_public_media_bucket_policy ? 1 : 0
   bucket = data.aws_s3_bucket.wordpress_storage.id
   policy = data.aws_iam_policy_document.wordpress_storage_public_read.json
 }
