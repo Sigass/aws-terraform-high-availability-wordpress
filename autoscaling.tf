@@ -6,7 +6,11 @@ resource "aws_launch_template" "launch_template" {
   image_id               = data.aws_ssm_parameter.al2023_ami.value
   instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.wp_sg.id, aws_security_group.alb_sg.id]
-  user_data              = base64encode(templatefile("userdata.sh", { rds_endpoint = replace(aws_db_instance.wordpress_db.endpoint, ":3306", "") }))
+  user_data              = base64encode(templatefile("userdata.sh", {
+    DB_USER = var.db_username,
+    DB_PASS = var.db_password,
+    DB_HOST = aws_db_instance.wordpress_db.address
+  }))
   key_name               = "vockey"
 }
 
