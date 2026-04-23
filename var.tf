@@ -1,14 +1,3 @@
-variable "enable_public_media_bucket_policy" {
-  description = "Activer la policy publique pour le bucket S3 media."
-  type        = bool
-  default     = false
-}
-
-variable "enable_wordpress_s3_iam_resources" {
-  description = "Activer les ressources IAM pour l'accès S3 de WordPress."
-  type        = bool
-  default     = false
-}
 variable "region" {
   type    = string
   default = "us-west-2"
@@ -42,10 +31,4 @@ variable "db_username" {
 variable "db_password" {
   type      = string
   sensitive = true
-}
-
-variable "storage_bucket_name" {
-  description = "Nom du bucket S3 pour WordPress"
-  type        = string
-  default     = "wordpress-media-bucket"
 }
