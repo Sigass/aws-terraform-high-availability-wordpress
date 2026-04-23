@@ -1,7 +1,4 @@
 /*
-...tout le contenu S3 commenté temporairement...
-*/
-
 data "aws_caller_identity" "current" {}
 
 locals {
@@ -71,3 +68,4 @@ resource "aws_s3_bucket_policy" "wordpress_storage_public_read" {
   bucket = data.aws_s3_bucket.wordpress_storage.id
   policy = data.aws_iam_policy_document.wordpress_storage_public_read.json
 }
+*/
