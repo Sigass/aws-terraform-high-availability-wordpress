@@ -1,3 +1,7 @@
+/*
+...tout le contenu S3 commenté temporairement...
+*/
+
 data "aws_caller_identity" "current" {}
 
 locals {
