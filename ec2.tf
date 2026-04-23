@@ -8,13 +8,12 @@ resource "aws_launch_template" "wp_lt" {
   instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.wp_sg.id]
 
-  dynamic "iam_instance_profile" {
-    for_each = var.enable_wordpress_s3_iam_resources ? [1] : []
-
-    content {
-      name = aws_iam_instance_profile.wordpress_ec2_profile[0].name
-    }
-  }
+  // dynamic "iam_instance_profile" {
+  //   for_each = var.enable_wordpress_s3_iam_resources ? [1] : []
+  //   content {
+  //     name = aws_iam_instance_profile.wordpress_ec2_profile[0].name
+  //   }
+  // }
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
@@ -24,13 +23,11 @@ resource "aws_launch_template" "wp_lt" {
     retry() {
       local attempts="$1"
       shift
-
       local try=1
       until "$@"; do
         if [ "$try" -ge "$attempts" ]; then
           return 1
         fi
-
         try=$((try + 1))
         sleep 10
       done
@@ -68,13 +65,11 @@ exec >> /var/log/bootstrap-wordpress.log 2>&1
 retry() {
   local attempts="$1"
   shift
-
   local try=1
   until "$@"; do
     if [ "$try" -ge "$attempts" ]; then
       return 1
     fi
-
     try=$((try + 1))
     sleep 10
   done
@@ -95,20 +90,21 @@ chown -R apache:apache /var/www/html
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html -type f -exec chmod 644 {} \;
 
-if [ "${var.enable_wordpress_s3_iam_resources}" = "true" ]; then
-  sed -i "/\/\* That's all, stop editing! Happy publishing. \*\//i define( 'S3_UPLOADS_BUCKET', '${data.aws_s3_bucket.wordpress_storage.bucket}' );" wp-config.php
-  sed -i "/\/\* That's all, stop editing! Happy publishing. \*\//i define( 'S3_UPLOADS_REGION', '${var.region}' );" wp-config.php
-
-  mkdir -p wp-content/mu-plugins
-  retry 3 wget -O /tmp/s3-uploads.zip https://codeload.github.com/humanmade/S3-Uploads/zip/refs/heads/master
-  unzip -o /tmp/s3-uploads.zip -d /tmp
-  rm -rf wp-content/mu-plugins/s3-uploads
-  mv /tmp/S3-Uploads-master wp-content/mu-plugins/s3-uploads
-  cat > wp-content/mu-plugins/s3-uploads-loader.php <<'PHP'
-<?php
-require WPMU_PLUGIN_DIR . '/s3-uploads/s3-uploads.php';
-PHP
-fi
+  # --- Début désactivation S3 ---
+  # if [ "${var.enable_wordpress_s3_iam_resources}" = "true" ]; then
+  #   sed -i "/\/* That's all, stop editing! Happy publishing. *\//i define( 'S3_UPLOADS_BUCKET', '${data.aws_s3_bucket.wordpress_storage.bucket}' );" wp-config.php
+  #   sed -i "/\/* That's all, stop editing! Happy publishing. *\//i define( 'S3_UPLOADS_REGION', '${var.region}' );" wp-config.php
+  #   mkdir -p wp-content/mu-plugins
+  #   retry 3 wget -O /tmp/s3-uploads.zip https://codeload.github.com/humanmade/S3-Uploads/zip/refs/heads/master
+  #   unzip -o /tmp/s3-uploads.zip -d /tmp
+  #   rm -rf wp-content/mu-plugins/s3-uploads
+  #   mv /tmp/S3-Uploads-master wp-content/mu-plugins/s3-uploads
+  #   cat > wp-content/mu-plugins/s3-uploads-loader.php <<'PHP'
+  #   <?php
+  #   require WPMU_PLUGIN_DIR . '/s3-uploads/s3-uploads.php';
+  #   PHP
+  # fi
+  # --- Fin désactivation S3 ---
 
 rm -f /var/www/html/index.html
 chown -R apache:apache wp-content
