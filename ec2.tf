@@ -90,21 +90,9 @@ chown -R apache:apache /var/www/html
 find /var/www/html -type d -exec chmod 755 {} \;
 find /var/www/html -type f -exec chmod 644 {} \;
 
-  # --- Début désactivation S3 ---
-  # if [ "${var.enable_wordpress_s3_iam_resources}" = "true" ]; then
-  #   sed -i "/\/* That's all, stop editing! Happy publishing. *\//i define( 'S3_UPLOADS_BUCKET', '${data.aws_s3_bucket.wordpress_storage.bucket}' );" wp-config.php
-  #   sed -i "/\/* That's all, stop editing! Happy publishing. *\//i define( 'S3_UPLOADS_REGION', '${var.region}' );" wp-config.php
-  #   mkdir -p wp-content/mu-plugins
-  #   retry 3 wget -O /tmp/s3-uploads.zip https://codeload.github.com/humanmade/S3-Uploads/zip/refs/heads/master
-  #   unzip -o /tmp/s3-uploads.zip -d /tmp
-  #   rm -rf wp-content/mu-plugins/s3-uploads
-  #   mv /tmp/S3-Uploads-master wp-content/mu-plugins/s3-uploads
-  #   cat > wp-content/mu-plugins/s3-uploads-loader.php <<'PHP'
-  #   <?php
-  #   require WPMU_PLUGIN_DIR . '/s3-uploads/s3-uploads.php';
-  #   PHP
-  # fi
-  # --- Fin désactivation S3 ---
+  # --- Début suppression S3 dans script bash ---
+  # Toutes les lignes S3 supprimées du heredoc bash pour éviter toute interpolation
+  # --- Fin suppression S3 dans script bash ---
 
 rm -f /var/www/html/index.html
 chown -R apache:apache wp-content
