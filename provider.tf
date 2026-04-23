@@ -9,5 +9,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  # Décommentez et adaptez la ligne suivante si vous utilisez un profil spécifique
+  # profile = "votre_profil"
 }
