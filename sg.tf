@@ -1,4 +1,5 @@
-# Define security groups using least-privilege access.
+# Security Groups
+# Load Balancer SG
 resource "aws_security_group" "alb_sg" {
   name   = "alb-sg"
   vpc_id = aws_vpc.wordpress_vpc.id
@@ -16,6 +17,7 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
+# Web/App SG
 resource "aws_security_group" "wp_sg" {
   name   = "wordpress-sg"
   vpc_id = aws_vpc.wordpress_vpc.id
@@ -33,6 +35,7 @@ resource "aws_security_group" "wp_sg" {
   }
 }
 
+# DB SG
 resource "aws_security_group" "db_sg" {
   name   = "db-sg"
   vpc_id = aws_vpc.wordpress_vpc.id

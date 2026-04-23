@@ -1,14 +1,14 @@
-output "website_url" {
-  description = "Access your WordPress site here"
-  value       = "http://${aws_lb.wp_alb.dns_name}"
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = aws_lb.capstone_lb.dns_name
 }
 
-output "storage_bucket_name" {
-  description = "S3 bucket name for WordPress storage"
-  value       = data.aws_s3_bucket.wordpress_storage.bucket
+output "rds_endpoint" {
+  description = "RDS endpoint"
+  value       = aws_db_instance.wordpress_db.endpoint
 }
 
-output "storage_bucket_arn" {
-  description = "S3 bucket ARN for WordPress storage"
-  value       = data.aws_s3_bucket.wordpress_storage.arn
+output "bastion_public_ip" {
+  description = "Public IP of the bastion host (if created)"
+  value       = try(aws_instance.bastion.public_ip, null)
 }

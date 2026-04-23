@@ -33,26 +33,41 @@ data "aws_iam_policy_document" "wordpress_s3_access" {
   }
 }
 
+# IAM Instance Profile for EC2 (WordPress S3 access example)
 resource "aws_iam_role" "wordpress_ec2_role" {
-  count              = var.enable_wordpress_s3_iam_resources ? 1 : 0
-  name               = "wordpress-ec2-s3-role"
-  assume_role_policy = data.aws_iam_policy_document.wordpress_ec2_assume_role.json
+  name = "wordpress-ec2-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+    }]
+  })
 }
 
-resource "aws_iam_policy" "wordpress_s3_access" {
-  count  = var.enable_wordpress_s3_iam_resources ? 1 : 0
-  name   = "wordpress-s3-access"
-  policy = data.aws_iam_policy_document.wordpress_s3_access.json
+resource "aws_iam_policy" "wordpress_s3_policy" {
+  name = "wordpress-s3-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ]
+      Resource = "*"
+    }]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "wordpress_s3_access" {
-  count      = var.enable_wordpress_s3_iam_resources ? 1 : 0
-  role       = aws_iam_role.wordpress_ec2_role[0].name
-  policy_arn = aws_iam_policy.wordpress_s3_access[0].arn
+resource "aws_iam_role_policy_attachment" "wordpress_s3_attach" {
+  role       = aws_iam_role.wordpress_ec2_role.name
+  policy_arn = aws_iam_policy.wordpress_s3_policy.arn
 }
 
 resource "aws_iam_instance_profile" "wordpress_ec2_profile" {
-  count = var.enable_wordpress_s3_iam_resources ? 1 : 0
-  name  = "wordpress-ec2-profile"
-  role  = aws_iam_role.wordpress_ec2_role[0].name
+  name = "wordpress-ec2-profile"
+  role = aws_iam_role.wordpress_ec2_role.name
 }

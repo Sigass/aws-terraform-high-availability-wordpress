@@ -1,3 +1,4 @@
+
 # AWS High-Availability Infrastructure for WordPress
 
 ## Project Overview
@@ -10,31 +11,31 @@ The infrastructure is designed to be scalable, fault-tolerant, and security-cons
 
 ### 1. Networking
 
-- Custom VPC: `192.168.0.0/26`
-- Public subnet A: `192.168.0.0/28`
-- Public subnet B: `192.168.0.16/28`
-- Private subnet A: `192.168.0.32/28`
-- Private subnet B: `192.168.0.48/28`
+- Custom VPC: `10.0.0.0/16`
+- Public Subnet 1: `10.0.1.0/24` (us-west-2a)
+- Public Subnet 2: `10.0.3.0/24` (us-west-2b)
+- Private Subnet 1: `10.0.2.0/24` (us-west-2a)
+- Private Subnet 2: `10.0.4.0/24` (us-west-2b)
 - Internet Gateway for public routing
 - Public route table associated with both public subnets
 
-This layout spans two Availability Zones in `us-west-2` and supports both ALB and RDS subnet requirements.
+Ce schéma couvre deux zones de disponibilité dans `us-west-2` et supporte les besoins ALB et RDS.
 
 ### 2. Compute and Traffic Distribution
 
 - Application Load Balancer across two public subnets
 - Target Group with HTTP health checks
 - Auto Scaling Group with:
-  - desired capacity: `1`
-  - minimum size: `1`
-  - maximum size: `2`
+  - desired capacity: `2`
+  - minimum size: `2`
+  - maximum size: `3`
 - Launch Template based on the latest Amazon Linux 2023 AMI retrieved through AWS SSM
 
-The EC2 bootstrap installs Apache, PHP, and WordPress automatically through `user_data`.
+Le bootstrap EC2 installe Apache, PHP et WordPress automatiquement via `user_data`.
 
 ### 3. Database
 
-- Amazon RDS MySQL instance
+- Amazon RDS MySQL 8.0.35 instance (db.t3.micro, 10GB storage)
 - Dedicated DB subnet group across two private subnets
 - Database access restricted to the WordPress application security group
 
@@ -43,11 +44,12 @@ The EC2 bootstrap installs Apache, PHP, and WordPress automatically through `use
 - Load balancer security group: allows HTTP `80` from the internet
 - Web security group: allows HTTP `80` only from the load balancer security group
 - Database security group: allows MySQL `3306` only from the web security group
+- Utilisation recommandée d'AWS Secrets Manager pour les identifiants sensibles (voir section améliorations futures)
 
 ## Automation Details
 
 - Infrastructure as code with Terraform
-- Split Terraform configuration by concern: VPC, subnets, route tables, security groups, load balancer, listener, target group, EC2 launch template, Auto Scaling, and database
+- Split Terraform configuration by concern: vpc.tf, subnet.tf, route_tables.tf, security_group.tf, load_balancer.tf, listener-lb.tf, target-group-lb.tf, ec2.tf, autoscaling.tf, database.tf
 - Dynamic AMI resolution via `aws_ssm_parameter`
 - Output exposing the WordPress entry URL through the ALB DNS name
 
@@ -99,11 +101,17 @@ terraform plan
 terraform apply
 ```
 
+## Notes importantes
+
+- Les variables sont définies dans `variables.tf` (et non `var.tf`).
+- Les CIDR par défaut correspondent à l'architecture recommandée ; modifiez-les dans `variables.tf` si besoin.
+- Pour la sécurité, privilégiez l'utilisation d'AWS Secrets Manager pour la gestion des mots de passe (voir section améliorations futures).
+
 ## Notes
 
-- `db_password` should be treated as a sensitive value and managed in HCP Terraform rather than committed to source control.
+- `db_password` should be treated as a sensitive value and managed in HCP Terraform or AWS Secrets Manager rather than committed to source control.
 - The current implementation uses HCP Terraform as the state and execution backend, not S3.
-- The network is multi-AZ, even though the workload can scale from one to two application instances.
+- The network is multi-AZ, and the workload peut scaler de deux à trois instances applicatives.
 - The media bucket can be pinned with `storage_bucket_name` to avoid accidental name drift and should be reused rather than recreated.
 - RDS is configured with backup retention, deletion protection, and `prevent_destroy` to reduce accidental data loss.
 - If your AWS credentials change, keep them pointed at the same AWS account or role for this stack. Changing to a different account means Terraform will no longer manage the same infrastructure.
