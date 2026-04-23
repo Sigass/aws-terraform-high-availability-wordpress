@@ -32,3 +32,9 @@ variable "db_password" {
   type      = string
   sensitive = true
 }
+
+variable "storage_bucket_name" {
+  description = "Nom du bucket S3 pour WordPress"
+  type        = string
+  default     = "wordpress-media-bucket"
+}

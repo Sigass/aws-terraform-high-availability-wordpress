@@ -8,11 +8,6 @@ output "rds_endpoint" {
   value       = aws_db_instance.wordpress_db.endpoint
 }
 
-output "bastion_public_ip" {
-  description = "Public IP of the bastion host (if created)"
-  value       = try(aws_instance.bastion.public_ip, null)
-}
-
 output "vpc_id" {
   description = "ID du VPC principal"
   value       = aws_vpc.wordpress_vpc.id
